@@ -5,25 +5,30 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+CREATE DATABASE IF NOT EXISTS `vi_dien_tu` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `vi_dien_tu`;
 
 CREATE TABLE `account` (
   `id` int(11) NOT NULL,
   `user` varchar(10) DEFAULT NULL,
   `pass` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL DEFAULT '',
   `email` varchar(255) DEFAULT NULL,
   `phone` varchar(13) DEFAULT NULL,
   `birth` date DEFAULT NULL,
   `address` varchar(255) DEFAULT '',
-  `front_citizen_card` varchar(255) DEFAULT '',
-  `behind_citizen_card` varchar(255) DEFAULT '',
+  `face` varchar(255) DEFAULT '',
+  `back` varchar(255) DEFAULT '',
   `money` int(11) DEFAULT 10000000,
   `confirm` int(11) DEFAULT 0 COMMENT '0-Chưa xác nhận, 1-Đã xác nhận',
-  `role_id` int(11) DEFAULT 2
+  `role_id` int(11) DEFAULT 2,
+  `change_pass` int(1) DEFAULT 0 COMMENT '0: Chưa thay pass, 1: Đã thay pass'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `account` (`id`, `user`, `pass`, `email`, `phone`, `birth`, `address`, `front_citizen_card`, `behind_citizen_card`, `money`, `confirm`, `role_id`) VALUES
-(1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', NULL, NULL, NULL, NULL, NULL, NULL, 10000000, 0, 1),
-(2, '1234567890', 'e10adc3949ba59abbe56e057f20f883e', 'haohao@omachi.vifon', '0123456789', '2000-01-01', 'Trái Đất', NULL, NULL, 10000000, 0, 2);
+INSERT INTO `account` (`id`, `user`, `pass`, `name`, `email`, `phone`, `birth`, `address`, `face`, `back`, `money`, `confirm`, `role_id`, `change_pass`) VALUES
+(1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'Admin', NULL, NULL, NULL, NULL, NULL, NULL, 10000000, 0, 1, 1),
+(6, '3225101270', 'bb76611ff83cc19e6258fabebe86be1f', 'Trần Thị Thor', 'mrs.thor@asgard.loki', '0123321123', '1111-11-11', 'Asgard', '1653915989_1_0_thor_girl.jpg', '1653915989_2_0_thor_girl.jpg', 10000000, 0, 2, 0),
+(11, '8914361155', '6f2956b1384340d552f93401809f71be', 'Thor', 'hoangkhacphuc.dev@gmail.com', '0123123112', '1111-11-11', 'Asgard', '1653917554_1_0_thor.png', '1653917554_2_0_thor.png', 10000000, 0, 2, 0);
 
 CREATE TABLE `locked` (
   `id` int(11) NOT NULL,
@@ -88,7 +93,7 @@ ALTER TABLE `transaction`
 
 
 ALTER TABLE `account`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 ALTER TABLE `locked`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
