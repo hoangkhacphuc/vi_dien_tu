@@ -14,7 +14,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập lần đầu</title>
 
     
     <!-- jQuery CDN -->
@@ -69,7 +69,7 @@
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Mật khẩu">
                                 </div>
                                 <div class="form-group">
-                                    <button type="button" class="btn btn-primary btn-block" id="btn-login">Đăng nhập</button>
+                                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
                                 </div>
                                 <div class="form-group flex-space-bw">
                                     <a href="register.php">Đăng ký</a>

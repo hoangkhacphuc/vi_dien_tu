@@ -36,4 +36,36 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#btn-login').click(function (e) { 
+        e.preventDefault();
+        // Lấy dữ liệu từ form
+        let username = $('#username').val();
+        let password = $('#password').val();
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=login', {
+            username: username,
+            password: password
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Đăng nhập thất bại', 'error');
+                return;
+            }
+            
+            data = JSON.parse(data);
+            console.log(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', 'Đăng nhập thành công', 'success');
+            setTimeout(function () {
+                window.location.href = './index.php';
+            }
+            , 2000);
+        });
+    });
 });

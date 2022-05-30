@@ -20,7 +20,7 @@ CREATE TABLE `account` (
   `face` varchar(255) DEFAULT '',
   `back` varchar(255) DEFAULT '',
   `money` int(11) DEFAULT 10000000,
-  `confirm` int(11) DEFAULT 0 COMMENT '0-Chưa xác nhận, 1-Đã xác nhận',
+  `confirm` int(11) DEFAULT 0 COMMENT '0-Chưa xác nhận\r\n1-Đã xác nhận\r\n2-Đã hủy\r\n3-Yc CMND',
   `role_id` int(11) DEFAULT 2,
   `change_pass` int(1) DEFAULT 0 COMMENT '0: Chưa thay pass, 1: Đã thay pass'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

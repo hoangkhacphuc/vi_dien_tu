@@ -1,6 +1,8 @@
 <?php
     require_once 'database.php';
     session_start();
+    // Lấy múi giờ Việt Nam
+    date_default_timezone_set('Asia/Ho_Chi_Minh');
 
     $Email_send = '';
     $PassEmail_send = '';
@@ -119,6 +121,87 @@
         return;
     }
 
+    if ($action == "login") {
+        if (isLoggedIn())
+        {
+            apiResponse(400, "Bạn đã đăng nhập");
+            return;
+        }
+        // check isset user, pass
+        if (!isset($_POST['username']) || !isset($_POST['password']) || empty($_POST['username']) || empty($_POST['password'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        // Kiểm tra tài khoản, mật khẩu
+        $sql = "SELECT * FROM account WHERE user = '$username'";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 0) {
+            apiResponse(400, "Tài khoản không tồn tại");
+            return;
+        }
+
+        $row = mysqli_fetch_assoc($result);
+        $user_id = $row['id'];
+        $pass = $row['pass'];
+
+        // Kiểm tra số lần sai mật khẩu
+        $sql = "SELECT * FROM locked WHERE account_id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        $amount_wrong = 0;
+        $row = mysqli_num_rows($result);
+        if ($row > 0) 
+        {
+            $row = mysqli_fetch_assoc($result);
+            $amount_wrong = $row['amount'];
+        }
+
+        if ($amount_wrong >= 6)
+        {
+            apiResponse(400, "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ");
+            return;
+        }
+
+        if (md5($password) != $pass) {
+            if ($amount_wrong == 0)
+            {
+                $sql = "INSERT INTO locked (account_id, amount) VALUES ('$user_id', '1')";
+                $result = mysqli_query($conn, $sql);
+            }
+            else
+            {
+                if ($amount_wrong == 3 && strtotime($row['created']) > time() - 60)
+                {
+                    apiResponse(400, "Tài khoản hiện đang bị tạm khóa, vui lòng thử lại sau 1 phút");
+                    return;
+                }
+                // Update số lần sai mật khẩu và thời gian
+                $sql = "UPDATE locked SET amount = amount + 1, created = NOW() WHERE account_id = '$user_id'";
+                $result = mysqli_query($conn, $sql);
+            }
+            $amount_wrong++;
+            if ($amount_wrong >= 6)
+            {
+                apiResponse(400, "Tài khoản đã bị khóa do nhập sai mật khẩu nhiều lần, vui lòng liên hệ quản trị viên để được hỗ trợ");
+                return;
+            }
+            if ($amount_wrong == 3)
+            {
+                apiResponse(400, "Tài khoản hiện đang bị tạm khóa, vui lòng thử lại sau 1 phút");
+                return;
+            }
+            apiResponse(400, "Sai mật khẩu");
+            return;
+        }
+
+        $sql = "DELETE FROM locked WHERE account_id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        // Lưu thông tin vào session
+        $_SESSION['User_ID'] = $user_id;
+        apiResponse(200, "Đăng nhập thành công");
+    }
 
 
 
@@ -156,7 +239,7 @@
 
     // Hàm kiểm tra đăng nhập
     function isLoggedIn() {
-        return isset($_SESSION['user_id']);
+        return isset($_SESSION['User_ID']);
     }
 
     // Hàm kiểm tra số điện thoại
