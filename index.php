@@ -5,7 +5,10 @@
         header('Location: index.php');
     }
 
-    
+    if (isFirstLogin()) {
+        header('Location: change-password.php');
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -73,7 +76,6 @@
                                 </div>
                                 <div class="form-group flex-space-bw">
                                     <a href="register.php">Đăng ký</a>
-                                    <a href="change-password.php">Đổi mật khẩu</a>
                                     <a href="forgot-password.php">Quên mật khẩu?</a>
                                 </div>
                             </form>

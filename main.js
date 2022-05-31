@@ -68,4 +68,36 @@ $(document).ready(function () {
             , 2000);
         });
     });
+
+    $('#btn-change-pass').click(function (e) { 
+        e.preventDefault();
+        // Get value 
+        let oldPass = $('#old-password').val() || '';
+        let newPass = $('#new-password').val();
+        let confirmPass = $('#re-password').val();
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=change-pass', {
+            password: oldPass,
+            'new-password': newPass,
+            'confirm-password': confirmPass
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Đổi mật khẩu thất bại', 'error');
+                return;
+            }
+            data = JSON.parse(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', 'Đổi mật khẩu thành công', 'success');
+            setTimeout(function () {
+                window.location.href = './index.php';
+            }
+            , 2000);
+        });
+    });
 });

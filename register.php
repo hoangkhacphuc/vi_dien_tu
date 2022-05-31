@@ -51,7 +51,7 @@
                 </div>
             </div>
         </header>
-        <!-- Form đăng ký có các trường : Email, số điện thoại, ngày sinh, địa chỉ, mặt trước, mặt sau chứng minh nhân dân -->
+    
         <div class="container">
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
@@ -92,7 +92,6 @@
                                 <button type="button" class="btn btn-primary" id="btn-register">Đăng ký</button>
                                 <div class="form-group flex-space-bw">
                                     <a href="index.php">Đăng nhập</a>
-                                    <a href="change-password.php">Đổi mật khẩu</a>
                                     <a href="forgot-password.php">Quên mật khẩu?</a>
                                 </div>
                             </form>

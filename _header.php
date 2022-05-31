@@ -27,6 +27,36 @@
 
 </head>
 <body>
-    <header>
-        
+    <header class="header-page">
+        <div class="menu-header">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="#">Tài khoản</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="#">Nạp tiền</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="#">Rút tiền</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="#">Chuyển tiền</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="#">Lịch sử</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="header-content">
+                        <h1>Ví điện tử</h1>
+                        <p>Chào mừng bạn đến với Ví điện tử</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>

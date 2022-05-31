@@ -12,3 +12,18 @@
     justify-content: space-between;
     width: 100%;
 }
+
+header.header-page > .menu-header {
+    background-color: #00c9fc;
+}
+
+header.header-page > .menu-header > .container > .row a {
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    display: inline-block;
+}
+
+header.header-page > .menu-header > .container > .row a:hover {
+    background-color: #eeeeeeaa;
+}

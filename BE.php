@@ -203,6 +203,46 @@
         apiResponse(200, "Đăng nhập thành công");
     }
 
+    if ($action == "change-pass") {
+        if (!isLoggedIn())
+        {
+            apiResponse(400, "Bạn chưa đăng nhập");
+            return;
+        }
+        // check isset pass, new-pass, confirm-pass
+        if (!isset($_POST['new-password']) || !isset($_POST['confirm-password']) || empty($_POST['new-password']) || empty($_POST['confirm-password'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        if (!isFirstLogin() && (!isset($_POST['password']) || empty($_POST['password']))) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $password = $_POST['password'];
+        $new_password = $_POST['new-password'];
+        $confirm_password = $_POST['confirm-password'];
+        if ($new_password != $confirm_password) {
+            apiResponse(400, "Mật khẩu không khớp");
+            return;
+        }
+
+        $user_id = $_SESSION['User_ID'];
+
+        if (!isFirstLogin())
+        {
+            $sql = "SELECT * FROM account WHERE id = '$user_id' AND pass = '" . md5($password) . "'";
+            $result = mysqli_query($conn, $sql);
+            if (mysqli_num_rows($result) == 0) {
+                apiResponse(400, "Mật khẩu cũ không chính xác");
+                return;
+            }
+        }
+        $sql = "UPDATE account SET pass = '" . md5($new_password) . "', change_pass = '1' WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        apiResponse(200, "Đổi mật khẩu thành công");
+    }
+
 
 
 
@@ -297,6 +337,24 @@
             return 0;
         } else {
             return 1;
+        }
+    }
+
+    // Hàm kiểm tra lần đầu đăng nhập
+    function isFirstLogin() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        $user_id = $_SESSION['User_ID'];
+        $sql = "SELECT * FROM account WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        if ($row['change_pass'] == 0) {
+            return true;
+        } else {
+            return false;
         }
     }
 
