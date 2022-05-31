@@ -41,7 +41,7 @@
                         <a href="#">Rút tiền</a>
                     </div>
                     <div class="col-md-2">
-                        <a href="#">Chuyển tiền</a>
+                        <a href="./transfers.php">Chuyển tiền</a>
                     </div>
                     <div class="col-md-2">
                         <a href="#">Lịch sử</a>

@@ -30,7 +30,7 @@ CREATE TABLE `account` (
 INSERT INTO `account` (`id`, `user`, `pass`, `name`, `email`, `phone`, `birth`, `address`, `face`, `back`, `money`, `confirm`, `role_id`, `change_pass`, `otp`, `otp_created`) VALUES
 (1, 'admin', 'e10adc3949ba59abbe56e057f20f883e', 'Admin', NULL, NULL, NULL, NULL, NULL, NULL, 10000000, 1, 1, 1, NULL, NULL),
 (6, '3225101270', 'bb76611ff83cc19e6258fabebe86be1f', 'Trần Thị Thor', 'mrs.thor@asgard.loki', '0123321123', '1111-11-11', 'Asgard', '1653915989_1_0_thor_girl.jpg', '1653915989_2_0_thor_girl.jpg', 10000000, 0, 2, 0, NULL, NULL),
-(11, '8914361155', 'e10adc3949ba59abbe56e057f20f883e', 'Thor', 'hoangkhacphuc.dev@gmail.com', '0123123112', '2000-01-02', 'Asgard', '1653917554_1_0_thor.png', '1653917554_2_0_thor.png', 10000000, 0, 2, 1, 272921, '2022-05-31 11:01:28');
+(11, '1234567890', 'e10adc3949ba59abbe56e057f20f883e', 'Thor', 'hoangkhacphuc.dev@gmail.com', '0123123112', '2000-01-02', 'Asgard', '1653917554_1_0_thor.png', '1653917554_2_0_thor.png', 12000000, 1, 2, 1, 272921, '2022-05-31 11:01:28');
 
 CREATE TABLE `locked` (
   `id` int(11) NOT NULL,
@@ -69,9 +69,16 @@ CREATE TABLE `transaction` (
   `exp` date DEFAULT NULL,
   `cvv` varchar(3) DEFAULT NULL,
   `content` varchar(255) DEFAULT '',
-  `confirm` int(11) DEFAULT 0 COMMENT '0-Chưa xác nhận, 1-Đã xác nhận',
-  `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `confirm` int(11) DEFAULT 0 COMMENT '0-Chưa xác nhận \r\n1-Đã xác nhận\r\n2-Hủy',
+  `created` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `otp` int(11) DEFAULT 0,
+  `otp_created` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `transaction` (`id`, `account_id`, `method_id`, `total_money`, `card_number`, `exp`, `cvv`, `content`, `confirm`, `created`, `otp`, `otp_created`) VALUES
+(5, 11, 2, 1111111, '111111', '1111-11-11', '111', '', 1, '2022-05-31 12:39:56', 0, NULL),
+(6, 11, 2, 100000, '111111', '2022-10-10', '411', '', 1, '2022-05-31 12:42:50', 0, NULL),
+(7, 11, 2, 1000000, '222222', '2022-11-11', '443', '', 1, '2022-05-31 12:44:59', 0, NULL);
 
 
 ALTER TABLE `account`
@@ -107,7 +114,7 @@ ALTER TABLE `role`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 ALTER TABLE `transaction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 
 ALTER TABLE `account`

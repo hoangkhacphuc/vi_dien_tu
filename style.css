@@ -35,3 +35,11 @@ header.header-page > .menu-header > .container > .row a:hover {
     width: 300px;
     object-fit: cover;
 }
+
+#send-otp {
+    margin-top: 15px;
+}
+
+.chuyen-tien {
+    margin-bottom: 50px;
+}
