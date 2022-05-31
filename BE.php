@@ -344,6 +344,7 @@
 
 
 
+
     // Hàm xuất kết quả API
     function apiResponse($status, $message, $data = null) {
         $response = array(
@@ -440,4 +441,34 @@
         }
     }
 
+    // Hàm lấy thông tin cá nhân
+    function getUserInfo() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        $user_id = $_SESSION['User_ID'];
+        $sql = "SELECT * FROM account WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        return $row;
+    }
+
+    // Hàm chuyển format ngày tháng năm
+    function formatDate($date) {
+        $date = date_create($date);
+        return date_format($date, 'd/m/Y');
+    }
+
+    // Hàm lấy trạng thái tài khoản
+    function getStatus($status) {
+        if ($status == 0) {
+            return "Chưa xác minh";
+        } else if ($status == 1) {
+            return "Đã xác minh";
+        } else if ($status == 3) {
+            return "Chờ cập nhật";
+        }
+    }
 ?>

@@ -30,3 +30,8 @@ header.header-page > .menu-header > .container > .row a:hover {
 #row-otp {
     display: none;
 }
+
+.img-cccd {
+    width: 300px;
+    object-fit: cover;
+}

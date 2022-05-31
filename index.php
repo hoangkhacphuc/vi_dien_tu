@@ -2,7 +2,7 @@
     require_once 'BE.php';
 
     if (isLoggedIn()) {
-        header('Location: index.php');
+        header('Location: information.php');
     }
 
     if (isFirstLogin()) {
