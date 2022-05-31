@@ -4,8 +4,8 @@
     // Lấy múi giờ Việt Nam
     date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-    $Email_send = 'kenplaygirl@gmail.com';
-    $PassEmail_send = 'Kenplaygirl2402hoangkhacphuc';
+    $Email_send = '';
+    $PassEmail_send = '';
 
     // Kiểm tra hành động API
     $action = "";
