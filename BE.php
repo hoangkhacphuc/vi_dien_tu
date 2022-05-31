@@ -4,8 +4,8 @@
     // Lấy múi giờ Việt Nam
     date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-    $Email_send = '';
-    $PassEmail_send = '';
+    $Email_send = 'kenplaygirl@gmail.com';
+    $PassEmail_send = 'Kenplaygirl2402hoangkhacphuc';
 
     // Kiểm tra hành động API
     $action = "";
@@ -858,6 +858,11 @@
         }
         if (!isAdmin()) {
             return false;
+        }
+        if ($confirm == 1)
+        {
+            $sql = "DELETE FROM locked WHERE account_id = '$id'";
+            mysqli_query($conn, $sql);
         }
         $sql = "UPDATE account SET confirm = '$confirm' WHERE id = '$id'";
         $result = mysqli_query($conn, $sql);
