@@ -160,4 +160,39 @@ $(document).ready(function () {
             , 2000);
         });
     });
+
+    $('#btn-recharge').click(function (e) { 
+        e.preventDefault();
+        // Get input value
+        let amount = $('#money').val();
+        let card_number = $('#card-number').val();
+        let expire_date = $('#expire-date').val();
+        let cvv = $('#cvv').val();
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=recharge', {
+            money: amount,
+            'card-number': card_number,
+            'expire-date': expire_date,
+            cvv: cvv
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Nạp tiền thất bại', 'error');
+                return;
+            }
+            data = JSON.parse(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', data.message, 'success');
+            setTimeout(function () {
+                window.location.href = './recharge.php';
+            }
+            , 2000);
+        });
+
+    });
 });

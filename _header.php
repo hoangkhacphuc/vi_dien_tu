@@ -35,7 +35,7 @@
                         <a href="./information.php">Tài khoản</a>
                     </div>
                     <div class="col-md-2">
-                        <a href="#">Nạp tiền</a>
+                        <a href="./recharge.php">Nạp tiền</a>
                     </div>
                     <div class="col-md-2">
                         <a href="#">Rút tiền</a>
@@ -45,6 +45,9 @@
                     </div>
                     <div class="col-md-2">
                         <a href="#">Lịch sử</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="./logout.php">Đăng xuất</a>
                     </div>
                 </div>
             </div>

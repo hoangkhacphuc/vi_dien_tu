@@ -146,6 +146,7 @@
         $row = mysqli_fetch_assoc($result);
         $user_id = $row['id'];
         $pass = $row['pass'];
+        $verify = $row['confirm'];
 
         // Kiểm tra số lần sai mật khẩu
         $sql = "SELECT * FROM locked WHERE account_id = '$user_id'";
@@ -193,6 +194,12 @@
                 return;
             }
             apiResponse(400, "Sai mật khẩu");
+            return;
+        }
+
+        if ($verify == 2)
+        {
+            apiResponse(400, "Tài khoản này đã bị vô hiệu hóa, vui lòng liên hệ tổng đài 18001008");
             return;
         }
 
@@ -327,7 +334,119 @@
         apiResponse(200, "Đổi mật khẩu thành công");
     }
 
+    if ($action == "recharge") {
+        if (!isLoggedIn())
+        {
+            apiResponse(400, "Bạn chưa đăng nhập");
+            return;
+        }
+        if (!isVerified())
+        {
+            apiResponse(400, "Tính năng này chỉ dành cho các tài khoản đã được xác minh");
+            return;
+        }
+        // check isset card-number, expire-date, cvv, money
+        if (!isset($_POST['card-number']) || !isset($_POST['expire-date']) || !isset($_POST['cvv']) || !isset($_POST['money']) || empty($_POST['card-number']) || empty($_POST['expire-date']) || empty($_POST['cvv']) || empty($_POST['money'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $card_number = $_POST['card-number'];
+        $expire_date = $_POST['expire-date'];
+        $cvv = $_POST['cvv'];
+        $money = $_POST['money'];
+        $user_id = $_SESSION['User_ID'];
+        // Kiểm tra thông tin hợp lệ
+        if (!checkCardNumber($card_number)) {
+            apiResponse(400, "Số thẻ không hợp lệ");
+            return;
+        }
+        if (!isValidDate($expire_date)) {
+            apiResponse(400, "Ngày hết hạn không hợp lệ");
+            return;
+        }
+        if (!checkCVV($cvv)) {
+            apiResponse(400, "Mã CVV không hợp lệ");
+            return;
+        }
+        if (!checkRechargeMoney($money)) {
+            apiResponse(400, "Số tiền không hợp lệ hoặc nhỏ hơn 20.000 VNĐ");
+            return;
+        }
 
+        $card_input = array(
+            array(
+                'card_number' => '111111',
+                'expire_date' => '2022-10-10',
+                'cvv' => '411',
+                'money' => '-1',
+            ),
+            array(
+                'card_number' => '222222',
+                'expire_date' => '2022-11-11',
+                'cvv' => '443',
+                'money' => '1000000',
+            ),
+            array(
+                'card_number' => '333333',
+                'expire_date' => '2022-12-12',
+                'cvv' => '577',
+                'money' => '0',
+            ),
+        );
+
+        $card_choose = -1;
+
+        foreach ($card_input as $card) {
+            if ($card['card_number'] == $card_number) {
+                $card_choose = $card;
+                break;
+            }
+        }
+
+        if ($card_choose == -1) {
+            apiResponse(400, "Thẻ này không dược hỗ trợ");
+            return;
+        }
+
+        if ($card_choose['expire_date'] != $expire_date) {
+            apiResponse(400, "Ngày hết hạn không chính xác");
+            return;
+        }
+
+        if ($card_choose['cvv'] != $cvv) {
+            apiResponse(400, "Mã CVV không chính xác");
+            return;
+        }
+
+        if ($card_choose['money'] == 0) {
+            apiResponse(400, "Thẻ hết tiền");
+            return;
+        }
+
+        if ($card_choose['money'] < $money && $card_choose['money'] != -1) {
+            apiResponse(400, "Mỗi lần nạp tối đa là " . number_format($card_choose['money']) . " VNĐ");
+            return;
+        }
+
+        // Nạp tiền
+        $sql = "INSERT INTO transaction (account_id, card_number, exp, cvv, total_money, method_id, confirm) VALUES ('$user_id', '$card_number', '$expire_date', '$cvv', '$money', '2', '1')";
+
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
+            apiResponse(400, "Có lỗi xảy ra");
+            return;
+        }
+        $transaction_id = mysqli_insert_id($conn);
+        // Cập nhật số dư
+        $sql = "UPDATE account SET money = money + '$money' WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
+            apiResponse(400, "Có lỗi xảy ra");
+            return;
+        }
+        apiResponse(200, "Nạp tiền thành công");
+    }
 
 
 
@@ -471,4 +590,48 @@
             return "Chờ cập nhật";
         }
     }
+
+    // Hàm kiểm tra card number
+    function checkCardNumber($card_number) {
+        if (strlen($card_number) != 6 || !is_numeric($card_number)) {
+            return false;
+        }
+        return true;
+    }
+
+    // Hàm kiểm tra CVV
+    function checkCVV($cvv) {
+        if (strlen($cvv) != 3 || !is_numeric($cvv)) {
+            return false;
+        }
+        return true;
+    }
+
+    // Hàm kiểm tra số tiền nạp
+    function checkRechargeMoney($amount) {
+        if (!is_numeric($amount) || $amount < 20000) {
+            return false;
+        }
+        return true;
+    }
+
+    // Hàm kiểm tra người dùng đã được xác mình chưa
+    function isVerified() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        $user_id = $_SESSION['User_ID'];
+
+        $sql = "SELECT * FROM account WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        if ($row['confirm'] == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 ?>
