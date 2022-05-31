@@ -82,10 +82,17 @@
                                         <button class="btn btn-success" data-id="<?= $user_info['id'] ?>" data-type="1">Kích hoạt</button>
                                         <button class="btn btn-danger" data-id="<?= $user_info['id'] ?>" data-type="2">Vô hiệu hóa</button>
                                         <button class="btn btn-warning" data-id="<?= $user_info['id'] ?>" data-type="4">Chờ cập nhật</button>
-                                    <?php else : if ($user_info['confirm'] == 4) : ?>
+                                    <?php 
+                                    endif;
+                                    if ($user_info['confirm'] == 1) : ?>
+                                        <button class="btn btn-danger" data-id="<?= $user_info['id'] ?>" data-type="2">Vô hiệu hóa</button>
+                                        <button class="btn btn-warning" data-id="<?= $user_info['id'] ?>" data-type="4">Chờ cập nhật</button>
+                                    <?php 
+                                    endif;
+                                    if ($user_info['confirm'] == 4) : ?>
                                         <button class="btn btn-success" data-id="<?= $user_info['id'] ?>" data-type="1">Xác minh</button>
                                         <button class="btn btn-warning" data-id="<?= $user_info['id'] ?>" data-type="4">Chờ cập nhật</button>
-                                    <?php endif;
+                                    <?php
                                     endif; ?>
                                 </td>
                             </tr>

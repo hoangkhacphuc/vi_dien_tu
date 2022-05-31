@@ -19,8 +19,8 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="cho-kich-hoat-content">
-                    <h1>Chờ kích hoạt</h1>
-                    <p>Chờ tài khoản cần kích hoạt</p>
+                    <h1>Đã kích hoạt</h1>
+                    <p>Danh sách tài khoản đã kích hoạt</p>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                         </thead>
                         <tbody>
                             <?php
-                                $list = getListAccountWaitingActivation();
+                                $list = getListAccountActivated();
                                 foreach ($list as $value) :
                             ?>
                             <tr>
@@ -55,17 +55,8 @@
                                 <td><?= getStatusAccount($value['confirm']) ?></td>
                                 <td id="btn-change-confirm">
                                     <a href="detailAccount.php?id=<?= $value['id'] ?>" class="btn btn-primary">Chi tiết</a>
-                                    <?php if ($value['confirm'] == 0) : ?>
-                                        <button class="btn btn-success" data-id="<?= $value['id'] ?>" data-type="1">Kích hoạt</button>
-                                        <button class="btn btn-danger" data-id="<?= $value['id'] ?>" data-type="2">Vô hiệu hóa</button>
-                                        <button class="btn btn-warning" data-id="<?= $value['id'] ?>" data-type="4">Chờ cập nhật</button>
-                                    <?php 
-                                    endif;
-                                    if ($value['confirm'] == 4) : ?>
-                                        <button class="btn btn-success" data-id="<?= $value['id'] ?>" data-type="1">Xác minh</button>
-                                        <button class="btn btn-warning" data-id="<?= $value['id'] ?>" data-type="4">Chờ cập nhật</button>
-                                    <?php
-                                    endif; ?>
+                                    <button class="btn btn-danger" data-id="<?= $value['id'] ?>" data-type="2">Vô hiệu hóa</button>
+                                    <button class="btn btn-warning" data-id="<?= $value['id'] ?>" data-type="4">Chờ cập nhật</button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>

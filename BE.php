@@ -800,4 +800,25 @@
         }
     }
 
+    // Danh sách tài khoản đã kích hoạt
+    function getListAccountActivated() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return array();
+        }
+        if (!isAdmin()) {
+            return array();
+        }
+        $sql = "SELECT * FROM account WHERE confirm = '1' ORDER BY created_updated DESC";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $accounts = array();
+        while ($row) {
+            $accounts[] = $row;
+            $row = mysqli_fetch_assoc($result);
+        }
+        return $accounts;
+    }
+
 ?>
