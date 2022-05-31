@@ -842,4 +842,44 @@
         return $accounts;
     }
 
+    // danh sách tài khoản bị khóa vĩnh viễn
+    function getListAccountLocked() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return array();
+        }
+        if (!isAdmin()) {
+            return array();
+        }
+        $sql = "SELECT * FROM locked as l, account as a WHERE l.amount = '6' AND a.id = l.account_id ORDER BY l.created DESC";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $accounts = array();
+        while ($row) {
+            $accounts[] = $row;
+            $row = mysqli_fetch_assoc($result);
+        }
+        return $accounts;
+    }
+
+    // Kiểm tra tài khoản có id có bị khóa vĩnh viễn không
+    function isLocked($id) {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        if (!isAdmin()) {
+            return false;
+        }
+        $sql = "SELECT * FROM locked WHERE account_id = '$id' AND amount = '6'";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 ?>
