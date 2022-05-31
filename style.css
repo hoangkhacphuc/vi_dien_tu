@@ -27,3 +27,7 @@ header.header-page > .menu-header > .container > .row a {
 header.header-page > .menu-header > .container > .row a:hover {
     background-color: #eeeeeeaa;
 }
+
+#row-otp {
+    display: none;
+}

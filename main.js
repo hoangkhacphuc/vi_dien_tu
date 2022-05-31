@@ -100,4 +100,64 @@ $(document).ready(function () {
             , 2000);
         });
     });
+
+    $('#btn-forgot-password').click(function (e) { 
+        e.preventDefault();
+        // Get value
+        let email = $('#email').val();
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=forgot-password', {
+            email: email
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Lấy OTP thất bại', 'error');
+                return;
+            }
+            data = JSON.parse(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', 'Lấy OTP thành công. Kiểm tra Email để nhận OTP', 'success');
+            $('#row-email').css('display', 'none');
+            $('#row-otp').css('display', 'block');
+        });
+    });
+
+    $('#btn-verify-otp').click(function (e) { 
+        e.preventDefault();
+        // Get value
+        let email = $('#email').val();
+        let otp = $('#otp').val();
+        let new_password = $('#new-password').val();
+        let re_password = $('#re-password').val();
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=verify-otp', {
+            email: email,
+            otp: otp,
+            'new-password': new_password,
+            'confirm-password': re_password
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Xác thực OTP thất bại', 'error');
+                return;
+            }
+            data = JSON.parse(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', data.message, 'success');
+            setTimeout(function () {
+                window.location.href = './index.php';
+            }
+            , 2000);
+        });
+    });
 });

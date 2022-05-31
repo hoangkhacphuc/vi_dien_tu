@@ -4,8 +4,8 @@
     // Lấy múi giờ Việt Nam
     date_default_timezone_set('Asia/Ho_Chi_Minh');
 
-    $Email_send = '';
-    $PassEmail_send = '';
+    $Email_send = 'kenplaygirl@gmail.com';
+    $PassEmail_send = 'Kenplaygirl2402hoangkhacphuc';
 
     // Kiểm tra hành động API
     $action = "";
@@ -243,7 +243,89 @@
         apiResponse(200, "Đổi mật khẩu thành công");
     }
 
+    if ($action == "forgot-password") {
+        if (isLoggedIn())
+        {
+            apiResponse(400, "Bạn đã đăng nhập");
+            return;
+        }
+        // check isset email
+        if (!isset($_POST['email']) || empty($_POST['email'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $email = $_POST['email'];
+        $sql = "SELECT * FROM account WHERE email = '$email'";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 0) {
+            apiResponse(400, "Email không tồn tại");
+            return;
+        }
+        $row = mysqli_fetch_assoc($result);
+        $user_id = $row['id'];
+        $name = $row['name'];
+        $pass = randomString(6);
+        $otp = randomNumber(6);
 
+        $sql = "UPDATE account SET otp = '$otp', otp_created = NOW() WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        // Send mail
+        $send = sendMail($name, $email, "Quên mật khẩu", "OTP : $otp<br>Lưu ý: Mã OTP chỉ có hiệu lực trong vòng 1 phút");
+        if ($send) {
+            apiResponse(200, "Đã gửi mã OTP đến email");
+        } else {
+            apiResponse(400, "Gửi mã OTP thất bại");
+        }
+    }
+
+    if ($action == "verify-otp") {
+        if (isLoggedIn())
+        {
+            apiResponse(400, "Bạn đã đăng nhập");
+            return;
+        }
+        // check isset otp, email, new-password, confirm-password
+        if (!isset($_POST['otp']) || !isset($_POST['email']) || !isset($_POST['new-password']) || !isset($_POST['confirm-password']) || empty($_POST['otp']) || empty($_POST['email']) || empty($_POST['new-password']) || empty($_POST['confirm-password'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $otp = $_POST['otp'];
+        $email = $_POST['email'];
+        $new_password = $_POST['new-password'];
+        $confirm_password = $_POST['confirm-password'];
+        if ($new_password != $confirm_password) {
+            apiResponse(400, "Mật khẩu không khớp");
+            return;
+        }
+
+        $sql = "SELECT * FROM account WHERE email = '$email'";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 0) {
+            apiResponse(400, "Email không tồn tại");
+            return;
+        }
+
+        $row = mysqli_fetch_assoc($result);
+        $user_id = $row['id'];
+        $otp_user = $row['otp'];
+        $otp_created = $row['otp_created'];
+        $otp_created = strtotime($otp_created);
+        $now = time();
+        if ($otp != $otp_user) {
+            apiResponse(400, "Mã OTP không chính xác");
+            return;
+        }
+        if ($now - $otp_created > 60) {
+            apiResponse(400, "Mã OTP đã hết hạn");
+            return;
+        }
+        // Update password
+        $sql = "UPDATE account SET pass = '" . md5($new_password) . "' WHERE id = '$user_id'";
+        $result = mysqli_query($conn, $sql);
+        apiResponse(200, "Đổi mật khẩu thành công");
+    }
 
 
 
