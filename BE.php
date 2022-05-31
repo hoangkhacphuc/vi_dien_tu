@@ -486,6 +486,74 @@
         apiResponse(200, "Cập nhật thành công");
     }
 
+    if ($action == "update-cmnd") {
+        if (!isLoggedIn())
+        {
+            apiResponse(400, "Bạn chưa đăng nhập");
+            return;
+        }
+        // Kiểm tra input
+        if (!isset($_FILES['face']) || !isset($_FILES['back'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        if (empty($_FILES['face']) || empty($_FILES['back'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $face = $_FILES['face'];
+        $back = $_FILES['back'];
+
+        // Kiểm tra file
+        if ($face['error'] != 0 || $back['error'] != 0) {
+            apiResponse(400, "File không hợp lệ");
+            return;
+        }
+        if ($face['size'] > 1000000 || $back['size'] > 1000000) {
+            apiResponse(400, "File quá lớn");
+            return;
+        }
+
+        // Chỉ nhận file ảnh
+        $extension = pathinfo($face['name'], PATHINFO_EXTENSION);
+        if ($extension != "jpg" && $extension != "png" && $extension != "jpeg") {
+            apiResponse(400, "File ảnh không hợp lệ");
+            return;
+        }
+        $extension = pathinfo($back['name'], PATHINFO_EXTENSION);
+        if ($extension != "jpg" && $extension != "png" && $extension != "jpeg") {
+            apiResponse(400, "File ảnh không hợp lệ");
+            return;
+        }
+
+        // lưu ảnh vào folder img/upload
+        $face_name = time() . "_1_" . $face['name'];
+        $back_name = time() . "_2_" . $back['name'];
+        move_uploaded_file($face['tmp_name'], "img/upload/" . $face_name);
+        move_uploaded_file($back['tmp_name'], "img/upload/" . $back_name);
+
+        $user_info = getUserInfo();
+        // Xóa ảnh cmnd cũ
+        $f_name = "./img/upload/" . $user_info['face'];
+        $b_name = "./img/upload/" . $user_info['back'];
+        if (file_exists($f_name)) {
+            unlink($f_name);
+        }
+        if (file_exists($b_name)) {
+            unlink($b_name);
+        }
+        
+        // Cập nhật ảnh mới
+        $sql = "UPDATE account SET face = '$face_name', back = '$back_name', confirm = '4' WHERE id = '".$user_info['id']."'";
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
+            apiResponse(400, "Có lỗi xảy ra");
+            return;
+        }
+        apiResponse(200, "Cập nhật thành công");
+        return;
+    }
 
 
 
@@ -650,7 +718,7 @@
         return true;
     }
 
-    // Hàm kiểm tra người dùng đã được xác mình chưa
+    // Hàm kiểm tra người dùng đã được xác minh chưa
     function isVerified() {
         global $conn;
         if (!isLoggedIn())
@@ -662,7 +730,7 @@
         $sql = "SELECT * FROM account WHERE id = '$user_id'";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
-        if ($row['confirm'] == 1) {
+        if ($row['confirm'] == 1 ) {
             return true;
         } else {
             return false;

@@ -224,4 +224,37 @@ $(document).ready(function () {
             , 2000);
         });
     });
+
+    $('#btn-update-cmnd').click(function (e) { 
+        e.preventDefault();
+        var formData = new FormData();
+        formData.append('face', $('#face')[0].files[0]);
+        formData.append('back', $('#back')[0].files[0]);
+
+        $.ajax({
+            url: './BE.php?action=update-cmnd',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data == '')
+                {
+                    swal('Thất bại', 'Cập nhật thất bại', 'error');
+                    return;
+                }
+                data = JSON.parse(data);
+                if (data.status == 400)
+                {
+                    swal('Thất bại', data.message, 'error');
+                    return;
+                }
+                swal('Thành công', data.message, 'success');
+                setTimeout(function () {
+                    window.location.href = './index.php';
+                }
+                , 2000);
+            }
+        });
+    });
 });

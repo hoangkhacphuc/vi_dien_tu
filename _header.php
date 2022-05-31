@@ -47,6 +47,9 @@
                         <a href="./history.php">Lịch sử</a>
                     </div>
                     <div class="col-md-1">
+                        <a href="./update-cmnd.php">Cập nhật CMND</a>
+                    </div>
+                    <div class="col-md-1">
                         <a href="./change-password.php">Đổi mật khẩu</a>
                     </div>
                     <div class="col-md-1">

@@ -43,3 +43,7 @@ header.header-page > .menu-header > .container > .row a:hover {
 .chuyen-tien {
     margin-bottom: 50px;
 }
+
+.mg-btn {
+    margin: 30px 0 50px 0;
+}
