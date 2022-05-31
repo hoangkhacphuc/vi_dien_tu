@@ -448,13 +448,43 @@
         apiResponse(200, "Nạp tiền thành công");
     }
 
-
-
-
-
-
-
-
+    if ($action == "change-confirm")
+    {
+        if (!isLoggedIn())
+        {
+            apiResponse(400, "Bạn chưa đăng nhập");
+            return;
+        }
+        if (!isAdmin())
+        {
+            apiResponse(400, "Tính năng này chỉ dành cho các tài khoản admin");
+            return;
+        }
+        // check isset id, confirm
+        if (!isset($_POST['id']) || !isset($_POST['confirm']) || empty($_POST['id']) || empty($_POST['confirm'])) {
+            apiResponse(400, "Thiếu thông tin");
+            return;
+        }
+        // Gán giá trị
+        $id = $_POST['id'];
+        $confirm = $_POST['confirm'];
+        // Kiểm tra thông tin hợp lệ
+        if (!is_numeric($id)) {
+            apiResponse(400, "ID không hợp lệ");
+            return;
+        }
+        if (!is_numeric($confirm) || $confirm < 0 || $confirm > 4) {
+            apiResponse(400, "Trạng thái không hợp lệ");
+            return;
+        }
+        // Cập nhật trạng thái
+        $result = confirmAccount($id, $confirm);
+        if (!$result) {
+            apiResponse(400, "Có lỗi xảy ra");
+            return;
+        }
+        apiResponse(200, "Cập nhật thành công");
+    }
 
 
 
@@ -561,13 +591,18 @@
     }
 
     // Hàm lấy thông tin cá nhân
-    function getUserInfo() {
+    function getUserInfo($id = null) {
         global $conn;
         if (!isLoggedIn())
         {
             return false;
         }
-        $user_id = $_SESSION['User_ID'];
+        $user_id = 0;
+        if ($id == null) {
+            $user_id = $_SESSION['User_ID'];
+        } else {
+            $user_id = $id;
+        }
         $sql = "SELECT * FROM account WHERE id = '$user_id'";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
@@ -628,6 +663,137 @@
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_assoc($result);
         if ($row['confirm'] == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Hàm lấy lịch sử giao dịch
+    function getTransfers()
+    {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return array();
+        }
+        if (!isVerified()) {
+            return array();
+        }
+
+        $user_id = $_SESSION['User_ID'];
+
+        $sql = "SELECT t.created, m.name, t.total_money, t.confirm, t.id, t.method_id FROM transaction as t, method as m WHERE t.account_id = '$user_id' AND t.method_id = m.id ORDER BY t.created DESC;";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $transfers = array();
+        while ($row) {
+            $transfers[] = $row;
+            $row = mysqli_fetch_assoc($result);
+        }
+        return $transfers;
+    }
+
+    // Lấy trạng thái giao dịch
+    function getStatusTransfer($status) {
+        if ($status == 0) {
+            return "Chờ xác nhận";
+        } else if ($status == 1) {
+            return "Hoàn thành";
+        } else if ($status == 2) {
+            return "Hủy";
+        }
+    }
+
+    // Lấy thông tin chi tiết của giao dịch
+    function getTransferById($id) {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return array();
+        }
+        if (!isVerified()) {
+            return array();
+        }
+        
+        $user_id = $_SESSION['User_ID'];
+
+        $sql = "SELECT * FROM transaction as t, method as m WHERE t.account_id = '$user_id' AND t.method_id = m.id AND t.id = '$id'";
+
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 0) {
+            return array();
+        }
+        $row = mysqli_fetch_assoc($result);
+        return $row;
+    }
+
+    // Kiểm tra xem có phải là admin không
+    function isAdmin() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        $user_id = $_SESSION['User_ID'];
+        $sql = "SELECT * FROM account WHERE id = '$user_id' AND role_id = '1'";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // Lấy danh sách tài khoản mới tạo hoặc bổ sung CMND
+    function getListAccountWaitingActivation() {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return array();
+        }
+        if (!isAdmin()) {
+            return array();
+        }
+        $sql = "SELECT * FROM account WHERE confirm = '0' OR confirm = '4' ORDER BY created_updated DESC";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_assoc($result);
+        $accounts = array();
+        while ($row) {
+            $accounts[] = $row;
+            $row = mysqli_fetch_assoc($result);
+        }
+        return $accounts;
+    }
+
+    // Lấy trạng thái tài khoản
+    function getStatusAccount($status) {
+        if ($status == 0) {
+            return "Chưa xác minh";
+        } else if ($status == 1) {
+            return "Đã xác minh";
+        } else if ($status == 2) {
+            return "Đã hủy";
+        } else if ($status == 3) {
+            return "Yêu cầu cấp CMND";
+        } else if ($status == 4) {
+            return "Chờ xác minh CMND";
+        }
+    }
+
+    // Thay confirm tài khoản có id
+    function confirmAccount($id, $confirm) {
+        global $conn;
+        if (!isLoggedIn())
+        {
+            return false;
+        }
+        if (!isAdmin()) {
+            return false;
+        }
+        $sql = "UPDATE account SET confirm = '$confirm' WHERE id = '$id'";
+        $result = mysqli_query($conn, $sql);
+        if ($result) {
             return true;
         } else {
             return false;

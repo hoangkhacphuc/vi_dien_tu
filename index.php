@@ -9,6 +9,11 @@
         header('Location: change-password.php');
     }
 
+    if (isAdmin())
+    {
+        header('Location: activation.php');
+    }
+
 ?>
 
 <!DOCTYPE html>

@@ -193,6 +193,35 @@ $(document).ready(function () {
             }
             , 2000);
         });
+    });
 
+    $('#btn-change-confirm>button').click(function (e) { 
+        e.preventDefault();
+        // Get data
+        let id = $(this).attr('data-id');
+        let confirm = $(this).attr('data-type');
+
+        // POST dữ liệu đến server
+        $.post('./BE.php?action=change-confirm', {
+            id: id,
+            confirm: confirm
+        }, function (data) {
+            if (data == '')
+            {
+                swal('Thất bại', 'Thay đổi trạng thái thất bại', 'error');
+                return;
+            }
+            data = JSON.parse(data);
+            if (data.status == 400)
+            {
+                swal('Thất bại', data.message, 'error');
+                return;
+            }
+            swal('Thành công', data.message, 'success');
+            setTimeout(function () {
+                window.location.href = './activation.php';
+            }
+            , 2000);
+        });
     });
 });

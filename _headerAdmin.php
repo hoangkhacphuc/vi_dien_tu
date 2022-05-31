@@ -32,19 +32,16 @@
             <div class="container">
                 <div class="row">
                     <div class="col-md-1">
-                        <a href="./information.php">Tài khoản</a>
+                        <a href="./activation.php">Chờ kích hoạt</a>
                     </div>
                     <div class="col-md-1">
-                        <a href="./recharge.php">Nạp tiền</a>
+                        <a href="./activated.php">Đã kích hoạt</a>
                     </div>
                     <div class="col-md-1">
-                        <a href="#">Rút tiền</a>
+                        <a href="./deactivated.php">Vô hiệu hóa</a>
                     </div>
                     <div class="col-md-1">
-                        <a href="./transfers.php">Chuyển tiền</a>
-                    </div>
-                    <div class="col-md-1">
-                        <a href="./history.php">Lịch sử</a>
+                        <a href="./locked.php">Khóa vĩnh viên</a>
                     </div>
                     <div class="col-md-1">
                         <a href="./change-password.php">Đổi mật khẩu</a>
